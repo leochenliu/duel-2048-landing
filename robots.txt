@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 
 # Point crawlers at the sitemap
-Sitemap: https://plain-bar-aed1.leochenliu.workers.dev/sitemap.xml
+Sitemap: https://lp2048.767880.xyz/sitemap.xml

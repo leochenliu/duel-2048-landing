@@ -1,6 +1,6 @@
 # Duel 2048 — Promo Landing Page
 
-Single-file SEO landing page for [Duel 2048](https://plain-bar-aed1.leochenliu.workers.dev/) (promo) — game itself lives at `https://duel-2048.leochenliu.workers.dev/`.
+Single-file SEO landing page for [Duel 2048](https://lp2048.767880.xyz/) (promo) — game itself lives at `https://duel-2048.leochenliu.workers.dev/`.
 
 ## What's in here
 
@@ -77,5 +77,5 @@ Use the snippets already in the **Press kit** section (`#press` in `index.html`)
 
 ## Customization
 
-Search `index.html` for `plain-bar-aed1.leochenliu.workers.dev` (landing page URL) and `duel-2048.leochenliu.workers.dev` (game URL) and replace both if you redeploy on different domains.
+Search `index.html` for `lp2048.767880.xyz` (landing page URL) and `duel-2048.leochenliu.workers.dev` (game URL) and replace both if you redeploy on different domains.
 on a different domain. Everything else (title, description, OG) is inline.

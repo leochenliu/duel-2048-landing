@@ -153,7 +153,7 @@ def main():
 
     # footer / URL
     f_url = load_font(18)
-    d.text((PAD, H - 50), "plain-bar-aed1.leochenliu.workers.dev", fill=TEXT, font=f_url)
+    d.text((PAD, H - 50), "lp2048.767880.xyz", fill=TEXT, font=f_url)
     f_dim = load_font(16)
     d.text((PAD, H - 28), "Browser-only  ·  No login  ·  5 sync modes", fill=TEXT_DIM, font=f_dim)
 
