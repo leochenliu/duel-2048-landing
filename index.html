@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0E1116">
+<title>Duel 2048 — Same Board, Different Solutions | AI vs Human 2048</title>
+<meta name="description" content="Duel 2048: you and an AI Agent play 2048 on the same event stream. See how a machine chooses differently, move by move. Free, browser-only.">
+<meta name="keywords" content="2048 duel, AI plays 2048, AI vs human game, agent 2048, same problem different solutions, browser puzzle game, AI agent game, indie game, AI decision making">
+<meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1">
+<meta name="author" content="Leo Chen Liu">
+
+<!-- Canonical: change to your real domain after deployment -->
+<link rel="canonical" href="https://plain-bar-aed1.leochenliu.workers.dev/">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Duel 2048">
+<meta property="og:title" content="Duel 2048 — Same Board, Different Solutions">
+<meta property="og:description" content="Duel 2048: you and an AI Agent play 2048 on the same event stream. See how a machine chooses differently, move by move. Free, browser-only.">
+<meta property="og:url" content="https://plain-bar-aed1.leochenliu.workers.dev/">
+<meta property="og:image" content="./assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_US">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Duel 2048 — Same Board, Different Solutions">
+<meta name="twitter:description" content="Duel 2048: you and an AI Agent play 2048 on the same event stream. See how a machine chooses differently, move by move. Free, browser-only.">
+<meta name="twitter:image" content="./assets/og.png">
+
+<link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
+<link rel="alternate icon" href="./assets/favicon.svg">
+<link rel="stylesheet" href="./style.css">
+
+<!-- Structured data: VideoGame -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "VideoGame",
+  "name": "Duel 2048",
+  "alternateName": "Same Board, Different Solutions",
+  "description": "A side-by-side 2048 game where a human and an AI Agent play the same shared event stream, making different choices move by move.",
+  "url": "https://plain-bar-aed1.leochenliu.workers.dev/",
+  "gamePlatform": "Web Browser",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Any modern browser",
+  "genre": ["Puzzle", "Indie", "Educational"],
+  "playMode": "SinglePlayer",
+  "isAccessibleForFree": true,
+  "inLanguage": "en",
+  "image": "./assets/og.png",
+  "author": { "@type": "Person", "name": "Leo Chen Liu" },
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD", "availability": "https://schema.org/InStock" },
+  "aggregateRating": { "@type": "AggregateRating", "ratingValue": "5", "ratingCount": "1", "bestRating": "5" }
+}
+</script>
+
+<!-- Structured data: FAQPage (for featured snippets) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is Duel 2048?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Duel 2048 is a free browser puzzle game based on 2048, played side-by-side by a human and an AI Agent. Both sides receive the same sequence of tiles, but each side chooses its own moves independently." }
+    },
+    {
+      "@type": "Question",
+      "name": "How is the AI Agent playing?",
+      "acceptedAnswer": { "@type": "Answer", "text": "The right column is operated by an AI Agent driven by a configurable skill — typically a heuristic or LLM-based policy. You can swap policies and watch how the strategy changes." }
+    },
+    {
+      "@type": "Question",
+      "name": "What are the five sync modes?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Strict Sync (same values and grid), Value-Only Sync (only the spawned values match), Independent (classic 2048 for each side), Lockstep (the Agent waits for you to move), and Free (the Agent runs at its own pace)." }
+    },
+    {
+      "@type": "Question",
+      "name": "Is Duel 2048 free?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. It runs entirely in your browser, requires no login, and is free to play." }
+    },
+    {
+      "@type": "Question",
+      "name": "Why is this different from watching an AI play 2048?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Spectacle AI videos show you what the machine does. Duel 2048 shows you how the machine diverges from you, under the same constraints, move by move — making the comparison the experience itself." }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I share a replay?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Every game has a deterministic seed and an id in the URL (e.g. #abc123). Share the URL and anyone will replay the exact same match." }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header" role="banner">
+  <div class="container nav">
+    <a class="brand" href="#top" aria-label="Duel 2048 home">
+      <span class="brand-logo" aria-hidden="true">◧◨</span>
+      <span class="brand-name">Duel <span class="num">2048</span></span>
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="#how">How it works</a>
+      <a href="#modes">Modes</a>
+      <a href="#why">Why</a>
+      <a href="#faq">FAQ</a>
+      <a href="#press">Press</a>
+    </nav>
+    <a class="btn btn-primary nav-cta" href="https://duel-2048.leochenliu.workers.dev/" rel="noopener">Play Duel →</a>
+  </div>
+</header>
+
+<main id="main">
+  <!-- HERO -->
+  <section class="hero" id="top">
+    <div class="container hero-inner">
+      <p class="eyebrow">An AI · Human puzzle duel · same event stream</p>
+      <h1 class="hero-title">
+        Same board.<br>
+        <span class="grad">Different solutions.</span>
+      </h1>
+      <p class="hero-sub">
+        Duel 2048 is a side-by-side 2048 where you and an AI Agent play the <em>same</em> spawned tiles — then watch how the choices diverge, move by move. No login. Runs in your browser.
+      </p>
+      <div class="hero-cta">
+        <a class="btn btn-primary lg" href="https://duel-2048.leochenliu.workers.dev/" rel="noopener">Play Duel 2048 →</a>
+        <a class="btn btn-ghost lg" href="#how">See how it works</a>
+      </div>
+      <ul class="hero-meta" aria-label="Key facts">
+        <li><strong>0</strong> sign-ups</li>
+        <li><strong>5</strong> sync modes</li>
+        <li><strong>1</strong> shared event stream</li>
+        <li><strong>100%</strong> in-browser</li>
+      </ul>
+    </div>
+
+    <!-- Hero visual: mock dual board + event stream -->
+    <div class="container">
+      <div class="mock" role="img" aria-label="A mock-up of Duel 2048: a human board on the left, an AI Agent board on the right, and a shared event stream below showing different choices.">
+        <div class="mock-bar">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="mock-url">plain-bar-aed1.leochenliu.workers.dev · id mkncti0y</span>
+          <span class="mock-tag">seed 1790…5946</span>
+        </div>
+        <div class="mock-body">
+          <div class="mock-side">
+            <div class="mock-label"><span class="badge you">YOU</span><span class="muted">left column</span></div>
+            <div class="board">
+              <div class="cell c0"></div><div class="cell c2">2</div><div class="cell c0"></div><div class="cell c0"></div>
+              <div class="cell c0"></div><div class="cell c0"></div><div class="cell c4">4</div><div class="cell c0"></div>
+              <div class="cell c2">2</div><div class="cell c0"></div><div class="cell c8">8</div><div class="cell c0"></div>
+              <div class="cell c0"></div><div class="cell c16">16</div><div class="cell c0"></div><div class="cell c0"></div>
+            </div>
+          </div>
+          <div class="mock-side">
+            <div class="mock-label"><span class="badge ai">AGENT</span><span class="muted">right column · skill: heuristic-2048</span></div>
+            <div class="board">
+              <div class="cell c0"></div><div class="cell c0"></div><div class="cell c2">2</div><div class="cell c0"></div>
+              <div class="cell c4">4</div><div class="cell c0"></div><div class="cell c0"></div><div class="cell c0"></div>
+              <div class="cell c0"></div><div class="cell c0"></div><div class="cell c0"></div><div class="cell c2">2</div>
+              <div class="cell c0"></div><div class="cell c8">8</div><div class="cell c0"></div><div class="cell c16">16</div>
+            </div>
+          </div>
+        </div>
+        <div class="mock-stream">
+          <div class="stream-title">shared events <span class="muted">· same input, different output</span></div>
+          <table>
+            <thead><tr><th>#</th><th>value</th><th>your move</th><th>agent move</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td><span class="chip v2">2</span></td><td class="you">→ right</td><td class="ai">↓ down</td></tr>
+              <tr><td>2</td><td><span class="chip v4">4</span></td><td class="you">→ right</td><td class="ai">← left</td></tr>
+              <tr><td>3</td><td><span class="chip v2">2</span></td><td class="you">↑ up</td><td class="ai">↓ down</td></tr>
+              <tr><td>4</td><td><span class="chip v8">8</span></td><td class="you">← left</td><td class="ai">→ right</td></tr>
+              <tr><td>5</td><td><span class="chip v2">2</span></td><td class="you">→ right</td><td class="ai">↑ up</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="how" class="section">
+    <div class="container">
+      <p class="eyebrow">how it works</p>
+      <h2>One stream. Two players. Zero coordination.</h2>
+      <p class="lead">Tiles spawn from the same shared event log. Each side sees the same tiles in the same positions at the same time. After that, you and the Agent are on your own.</p>
+
+      <ol class="steps">
+        <li>
+          <div class="step-num">1</div>
+          <h3>Share an event stream</h3>
+          <p>Every tile value, position, and timing is determined by a seed at game start. Both boards draw from the same stream — never the other way around.</p>
+        </li>
+        <li>
+          <div class="step-num">2</div>
+          <h3>Play your side</h3>
+          <p>You move the left column with arrow keys. Swipe, plan, second-guess — your usual 2048 muscle memory, now under observation.</p>
+        </li>
+        <li>
+          <div class="step-num">3</div>
+          <h3>Watch the Agent play</h3>
+          <p>The right column is driven by a skill you choose — heuristic, search-based, or LLM-driven. The Agent thinks out loud in the event log.</p>
+        </li>
+        <li>
+          <div class="step-num">4</div>
+          <h3>Compare the divergence</h3>
+          <p>Scroll the shared event table. Every row shows the same tile and two different moves. Patterns emerge within 30 seconds.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- MODES -->
+  <section id="modes" class="section alt">
+    <div class="container">
+      <p class="eyebrow">five sync modes</p>
+      <h2>Pick how coupled you want the duel.</h2>
+      <p class="lead">Duel 2048 isn't one game — it's five. Same event stream, different rules of comparison.</p>
+
+      <div class="mode-grid">
+        <article class="mode-card">
+          <header><h3>Strict Sync</h3><span class="tag">values + grid</span></header>
+          <p>Every tile value, spawn position, and merge result is identical on both sides. Compare pure policy.</p>
+        </article>
+        <article class="mode-card">
+          <header><h3>Value-Only Sync</h3><span class="tag">values only</span></header>
+          <p>Same tile values appear, but positions and merges are independent. A loose, chaotic comparison.</p>
+        </article>
+        <article class="mode-card">
+          <header><h3>Independent</h3><span class="tag">classic 2048 × 2</span></header>
+          <p>Two unrelated 2048 boards. Use this to benchmark an Agent's raw strength without coupling.</p>
+        </article>
+        <article class="mode-card featured">
+          <header><h3>Lockstep</h3><span class="tag tag-featured">recommended</span></header>
+          <p>The Agent waits for you. Every row of the event table gets a human move and an Agent move. The cleanest comparison.</p>
+        </article>
+        <article class="mode-card">
+          <header><h3>Free</h3><span class="tag">AI runs first</span></header>
+          <p>The Agent plays at its own pace while you decide yours. Great for benchmarking without waiting on the human.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY -->
+  <section id="why" class="section">
+    <div class="container">
+      <p class="eyebrow">why this matters</p>
+      <h2>AI isn't a spectator sport. Make it a peer.</h2>
+
+      <div class="why-grid">
+        <article class="why-card">
+          <div class="why-icon">⟂</div>
+          <h3>Decisions, not demos</h3>
+          <p>"Watch AI play X" videos show capability. Duel 2048 shows <em>judgment</em> — what the Agent does when handed the same problem as you.</p>
+        </article>
+        <article class="why-card">
+          <div class="why-icon">⌗</div>
+          <h3>Same stream = fair comparison</h3>
+          <p>No "the AI got easier tiles." Same seed, same draws, same RNG. Every divergence in the event table is a real choice.</p>
+        </article>
+        <article class="why-card">
+          <div class="why-icon">⊕</div>
+          <h3>Readable AI</h3>
+          <p>The event log isn't hidden. You can scroll back, point at a moment, and say "by yourself, I would have gone left."</p>
+        </article>
+        <article class="why-card">
+          <div class="why-icon">↻</div>
+          <h3>Deterministic, shareable</h3>
+          <p>Every game has an id in the URL. Send it to a friend and they'll replay the exact same duel, byte for byte.</p>
+        </article>
+      </div>
+
+      <blockquote class="pull">
+        <p>"The point isn't who's better. The point is seeing where two reasonable players diverge on the same problem."</p>
+        <cite>— design note, Duel 2048</cite>
+      </blockquote>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" class="section alt">
+    <div class="container">
+      <p class="eyebrow">faq</p>
+      <h2>Quick answers</h2>
+
+      <details class="faq-item" open>
+        <summary>What is Duel 2048?</summary>
+        <p>A free browser puzzle game based on 2048, played side-by-side by you and an AI Agent on a shared event stream. Both sides get the same tiles; each side chooses its own moves.</p>
+      </details>
+      <details class="faq-item">
+        <summary>How is the AI Agent playing?</summary>
+        <p>The right column is driven by a configurable skill — typically a heuristic, search-based policy, or an LLM agent. You can swap policies and watch how the strategy changes.</p>
+      </details>
+      <details class="faq-item">
+        <summary>What are the five sync modes?</summary>
+        <p>Strict Sync (values + grid identical), Value-Only Sync (only tile values match), Independent (classic 2048 × 2), Lockstep (Agent waits for you — recommended for direct comparison), and Free (Agent plays at its own pace).</p>
+      </details>
+      <details class="faq-item">
+        <summary>Is Duel 2048 free?</summary>
+        <p>Yes. It runs entirely in your browser. No login, no accounts, no tracking beyond what's needed to serve the page.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Why is this different from watching AI play 2048?</summary>
+        <p>Spectacle videos show what a model can do. Duel 2048 shows how a model's choices diverge from yours on the same problem — the comparison <em>is</em> the experience.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Can I share a replay?</summary>
+        <p>Every game has a deterministic seed and an id in the URL. Send the link to anyone and they'll see the exact same match.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Does it work on mobile?</summary>
+        <p>Yes. Swipe to play. The dual-board layout collapses into a tabbed view below 768 px.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- PRESS / PRESS KIT -->
+  <section id="press" class="section">
+    <div class="container">
+      <p class="eyebrow">press kit</p>
+      <h2>For bloggers, streamers, and indie-game curators.</h2>
+      <p class="lead">Duel 2048 is free to write about and embed. Here's everything you need.</p>
+
+      <div class="press-grid">
+        <div class="press-block">
+          <h3>One-line description</h3>
+          <p class="kbd">Duel 2048 — a side-by-side 2048 where you and an AI Agent play the same event stream.</p>
+        </div>
+        <div class="press-block">
+          <h3>Long description</h3>
+          <p class="kbd">Duel 2048 reframes the classic 2048 puzzle as a comparison: a human and an AI Agent play on the same spawned event log, choosing moves independently. Five sync modes range from fully coupled (same values, same grid) to fully independent. Every game is deterministic — share the URL to replay the exact match.</p>
+        </div>
+        <div class="press-block">
+          <h3>Key facts</h3>
+          <ul class="facts">
+            <li>Browser-only, no install</li>
+            <li>No login, no accounts</li>
+            <li>Five sync modes</li>
+            <li>Deterministic, shareable replays</li>
+            <li>Open event log — every move visible</li>
+            <li>Built by Leo Chen Liu</li>
+          </ul>
+        </div>
+        <div class="press-block">
+          <h3>Suggested tags</h3>
+          <p class="tags"><span class="chip">indie-game</span><span class="chip">puzzle</span><span class="chip">AI</span><span class="chip">agent</span><span class="chip">2048</span><span class="chip">AI-vs-human</span><span class="chip">decision-making</span></p>
+        </div>
+      </div>
+
+      <h3 class="copy-snippets-title">Copy-paste social snippets</h3>
+      <div class="snippets">
+        <details class="snippet" open>
+          <summary>Tweet / X (≤ 280 chars)</summary>
+<pre>Same board. Different solutions.
+
+Duel 2048 puts you and an AI Agent on the same event stream — same tiles, different moves. Five sync modes. Zero login. Browser only.
+
+https://plain-bar-aed1.leochenliu.workers.dev/</pre>
+        </details>
+        <details class="snippet">
+          <summary>Reddit r/indiegaming / r/AI_Games (longer, story-first)</summary>
+<pre>Title: I made a 2048 where you and an AI Agent play the same event stream
+
+Most "watch AI play X" demos show what a model can do. Duel 2048 shows how its judgment differs from yours, on the same problem, move by move.
+
+- Shared, deterministic event log (every tile you get, the Agent gets too)
+- Five sync modes from "fully coupled" to "totally independent"
+- Lockstep mode: Agent waits for you. The cleanest side-by-side
+- Every game has a URL id — share the exact replay
+
+It's free, runs in-browser, no signup. Would love feedback on:
+- Which comparison feels most fun (strict sync vs lockstep vs free)
+- What skills you want to see the Agent use
+- Whether the event log UI helps or clutters
+
+https://plain-bar-aed1.leochenliu.workers.dev/</pre>
+        </details>
+        <details class="snippet">
+          <summary>Hacker News (terse, technical)</summary>
+<pre>Title: Duel 2048 — same event stream, different moves, you vs an AI Agent
+
+I built a side-by-side 2048 where a human and an AI Agent play the same seeded event stream. The interesting part isn't "who wins" — it's the divergence pattern: same tiles, same time, two different policies.
+
+Five sync modes: strict (values+grid), value-only, independent, AI-waits-for-you (lockstep), AI-runs-free. The event log is exposed, so every choice is auditable. Deterministic, shareable by URL id.
+
+Free, browser-only, no signup. Looking for feedback on which sync mode feels like the right default, and what policies people want to see dropped in.
+
+https://plain-bar-aed1.leochenliu.workers.dev/</pre>
+        </details>
+        <details class="snippet">
+          <summary>Product Hunt (maker comment / tagline)</summary>
+<pre>Tagline: Same board. Different solutions.
+
+Short: Duel 2048 puts you and an AI Agent on the same spawned event stream in a 2045-ish puzzle. Five sync modes. Deterministic, shareable replays.
+
+Long: Most AI-game demos show capability. Duel 2048 is built around comparison: under the same event stream, how does an AI's policy diverge from yours? The event log is exposed, every move is auditable, replays share by URL id.</pre>
+        </details>
+        <details class="snippet">
+          <summary>Streamer / YouTube short description</summary>
+<pre>Duel 2048 — a side-by-side 2048 where you and an AI Agent play the same event stream. Same tiles, two different players. Free, browser-only.
+
+#indiegame #2048 #AI #puzzlegame #agent</pre>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="section cta-band">
+    <div class="container cta-inner">
+      <h2>Ready to see how the Agent thinks?</h2>
+      <p>Arrow keys on desktop. Swipe on mobile. The duel starts in one click.</p>
+      <a class="btn btn-primary lg" href="https://duel-2048.leochenliu.workers.dev/" rel="noopener">Play Duel 2048 →</a>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container foot">
+    <div>
+      <span class="brand-logo" aria-hidden="true">◧◨</span>
+      <strong>Duel 2048</strong>
+      <p class="muted">Same board. Different solutions.</p>
+    </div>
+    <div class="foot-col">
+      <h4>Play</h4>
+      <a href="https://duel-2048.leochenliu.workers.dev/" rel="noopener">duel-2048.leochenliu.workers.dev</a>
+    </div>
+    <div class="foot-col">
+      <h4>Build with</h4>
+      <p class="muted">Cloudflare Workers · vanilla JS · in-browser</p>
+    </div>
+    <div class="foot-col">
+      <h4>Made by</h4>
+      <p class="muted">Leo Chen Liu</p>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

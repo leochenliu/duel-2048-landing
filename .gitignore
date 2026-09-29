@@ -1,0 +1,13 @@
+# Build artifacts
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Local-only deploy bundles
+deploy-staging/
+*.zip
+
+# Editor
+.vscode/
+.idea/
